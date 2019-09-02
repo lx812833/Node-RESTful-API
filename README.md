@@ -119,3 +119,43 @@ app.use(async (ctx, next) => {
 
 **`koa-compose：koa-compose则是将 koa/koa-router 各个中间件合并执行，结合 next() 形成一种串行机制，并且是支持异步，这样就形成了洋葱式模型`**
 
+##### koa-router 路由
+
+1. 下载`npm i koa-router --save`
+
+    引入并挂载
+
+    ```python
+    const Router = require("koa-router")
+    const router = new Router()
+    
+    router.get("/users", (ctx) => {
+        ctx.body = "用户列表页面"
+    })
+
+    router.get("/users/:id", ctx => {
+        ctx.body = `当前${ctx.params.id}用户` // 通过 ctx.params 解析 url 参数
+    })
+
+    app.use(router.routes())
+    ```
+ 
+ 2. 路由前缀
+ 
+    使用路由前缀 `prefix` 的好处是，当路由前缀需要更改时，直接更改前缀即可，简洁便利。
+    如：
+    
+    ```python
+    const userRouter = new Router({ prefix: "/users" })
+
+    userRouter.get("/", (ctx) => {
+        ctx.body = "用户列表页面"
+    })
+    
+    userRouter.get("/:id", ctx => {
+        ctx.body = `当前${ctx.params.id}用户`
+    })
+
+    app.use(userRouter.routes())
+    ```
+

@@ -9,7 +9,10 @@
   "author": "lx",
   "license": "ISC",
   "devDependencies": {
-    "koa": "^2.8.1",
     "nodemon": "^1.19.1"
+  },
+  "dependencies": {
+    "koa": "^2.8.1",
+    "koa-router": "^7.4.0"
   }
 }
