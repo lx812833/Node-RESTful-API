@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon app"
   },
   "author": "lx",
   "license": "ISC",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "koa": "^2.8.1",
+    "koa-bodyparser": "^2.5.0",
     "koa-router": "^7.4.0"
   }
 }

@@ -90,35 +90,56 @@
     },
     ```
  
- ##### Koa中间件与洋葱模型
  
- > **当一个中间件调用 `next()` 则该函数暂停并将控制传递给定义的下一个中间件。当在下游没有更多的中间件执行后，堆栈将展开并且每个中间件恢复执行其上游行为。**
+##### Koa中间件与洋葱模型
  
- 
-```python
-app.use(async (ctx, next) => {
-    console.log(1)  // 当执行打印 1 后，调用 next() ,执行下一个中间件，打印 3
-    await next()
-    console.log(2)
-    console.log(ctx.lastVal) // 通过挂载在ctx，可以取到最后中间件的结果
-})
+> **当一个中间件调用 `next()` 则该函数暂停并将控制传递给定义的下一个中间件。当在下游没有更多的中间件执行后，堆栈将展开并且每个中间件恢复执行其上游行为。**
 
-app.use(async (ctx, next) => {
-    console.log(3)
-    await next()
-    console.log(4)
-})
+    ```python
+     app.use(async (ctx, next) => {
+        console.log(1)  // 当执行打印 1 后，调用 next() ,执行下一个中间件，打印 3
+        await next()
+        console.log(2)
+        console.log(ctx.lastVal) // 通过挂载在ctx，可以取到最后中间件的结果
+     })
 
-app.use(async (ctx, next) => {
-    console.log(5)
-    ctx.lastVal = "ctx挂载"
-})
-```
+     app.use(async (ctx, next) => {
+        console.log(3)
+        await next()
+        console.log(4)
+     })
+
+    app.use(async (ctx, next) => {
+        console.log(5)
+        ctx.lastVal = "ctx挂载"
+    })
+    ```
 
 打印顺序为： 1 3 5 4 2 ctx挂载
 
 **`koa-compose：koa-compose则是将 koa/koa-router 各个中间件合并执行，结合 next() 形成一种串行机制，并且是支持异步，这样就形成了洋葱式模型`**
 
+
+#####  koa-bodyparser中间件
+
+**koa-bodyparser中间件** 是 koa2用来`post`提交数据的中间件
+
+1. 下载 `npm install koa-bodyparser@2 --save`
+    引入并挂载配置中间件
+    
+    ```python
+    const bodyParser = require('koa-bodyparser')
+    
+    app.use(bodyParser())
+    ```
+ 2. 读取`post`数据 对象格式 `ctx.request.body`
+    
+    ```python
+    router.post('/doAdd',async (ctx) =>{
+        console.log(ctx.request.body)
+    })  
+    ```
+ 
 ##### koa-router 路由
 
 1. 下载`npm i koa-router --save`
@@ -132,26 +153,25 @@ app.use(async (ctx, next) => {
     router.get("/users", (ctx) => {
         ctx.body = "用户列表页面"
     })
-
     router.get("/users/:id", ctx => {
-        ctx.body = `当前${ctx.params.id}用户` // 通过 ctx.params 解析 url 参数
+        ctx.body = `当前${ctx.params.id}用户`
     })
 
     app.use(router.routes())
     ```
  
- 2. 路由前缀
+2. 路由前缀
  
-    使用路由前缀 `prefix` 的好处是，当路由前缀需要更改时，直接更改前缀即可，简洁便利。
+    使用路由前缀 `prefix` 的好处是，当路由前缀需要更改时，直接更改前缀即     可，简洁便利。
     如：
     
     ```python
     const userRouter = new Router({ prefix: "/users" })
 
+
     userRouter.get("/", (ctx) => {
         ctx.body = "用户列表页面"
     })
-    
     userRouter.get("/:id", ctx => {
         ctx.body = `当前${ctx.params.id}用户`
     })
@@ -159,3 +179,20 @@ app.use(async (ctx, next) => {
     app.use(userRouter.routes())
     ```
 
+#### App
+
+一个规范有序的目录更富有表现性与逻辑性，让人耳目一新，简单上手。所有文件是以 `app`为根路径。
+
+    ```
+    ├── routes  // 路由
+    ├──── home.js  // home
+    ├──── users.js  //  用户路由
+    ├── controllers // 控制器
+    ├──── home.js  // home
+    ├──── users.js  //  users控制器
+    ```
+
+##### routes路由
+
+
+    
