@@ -185,14 +185,97 @@
 
     ```
     ├── routes  // 路由
-    ├──── home.js  // home
+    ├──── index.js  // 路由导入文件
+    ├──── home.js  // home路由
     ├──── users.js  //  用户路由
     ├── controllers // 控制器
     ├──── home.js  // home
     ├──── users.js  //  users控制器
     ```
 
+##### controllers控制器
+
+**Controller控制器**，是MVC中的部分C，此处的控制器主要负责功能处理部分：
+
+    1. 收集、验证请求参数并绑定到命令对象；
+    2. 处理业务，并将业务模块返回给路由。
+
+1. users.js控制器
+
+    ```python
+    const db = [{ name: "lx" }]
+    
+    class UsersControl {
+        find(ctx) {
+            ctx.body = db
+        }
+        findById(ctx) {
+            ctx.body = db[ctx.params.id * 1]
+        }
+        create(ctx) {
+            db.push(ctx.request.body)
+            ctx.body = ctx.request.body
+        }
+        update(ctx) {
+            db[ctx.params.id * 1] = ctx.request.body
+            ctx.body = ctx.request.body
+        }
+        delete(ctx) {
+            db.splice(ctx.params.id * 1, 1)
+            ctx.status = 204
+        }
+    }
+    
+    module.exports = new UsersControl()
+    ```
+
+
 ##### routes路由
+
+将每个功能模块拆分为一个个独立的路由，有助于使代码结构易懂。其中，最重要的是 **`路由导入文件index.js`**， 它将所有的路由通过脚本引入，不需要一个个的引入，减少代码，使其上档次~。
+
+1. **index.js**
+
+    ```python
+    const fs = require("fs")
+    
+    module.exports = (res) => {
+        fs.readdirSync(__dirname).forEach(file => {
+            if (file === "index.js") return
+            const route = require(`./${file}`)
+            res.use(route.routes()).use(route.allowedMethods()) 
+        })
+    }
+    ```
+    **`allowedMethods`**， 顾名思义，就是当前接口允许运行的`method`。比如，一个提供数据接的接口，设置为 `GET`， 当客户端发送 `POST`请求时就会返回错误信息。
+    
+    然后在 `index.js` 中导入并注册。
+    
+    ```python
+    const router = require('./routes')
+    
+    router(app)
+    ```
+    
+2. 业务路由（如user.js）
+
+    每个业务路由都需导入 **Koa-router ：**  `const Router = require("koa-router")`
+    
+    添加路由前缀，方便更改和复用：`const router = new Router({ prefix: "/users" })`
+    
+    在业务路由中导入相对应的控制器，即可完成对业务控制器的融洽结合，完成其具体业务功能：
+    
+    ```python
+    const { find, findById, create, update, delete: del } = require("../controllers/users")
+    
+    router.get("/", find)
+    router.post("/", create)
+    router.get("/:id", findById)
+    router.put("/:id", update)
+    router.delete("/:id", del)
+    
+    module.exports = router
+    ```
 
 
     
