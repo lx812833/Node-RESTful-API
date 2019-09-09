@@ -4,6 +4,9 @@ class UsersControl {
         ctx.body = db
     }
     findById(ctx) {
+        if (ctx.params.id * 1 >= db.length) {
+            ctx.throw(412, "先决条件失败")
+        }
         ctx.body = db[ctx.params.id * 1]
     }
     create(ctx) {

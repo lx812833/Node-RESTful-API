@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "cross-env NODE_ENV=production node app",
+    "dev": "nodemon app"
   },
   "author": "lx",
   "license": "ISC",

@@ -178,6 +178,42 @@
 
     app.use(userRouter.routes())
     ```
+##### 错误处理
+
+**错误处理** 是指 `编程语言或计算机硬件里的一种机制，处理软件或信息系统中出现的异常状况。`
+而`异常状况`又分为：
+
+1. 运行错误，返回500
+2. 逻辑错误，如找不到（404）、先决条件失败（412）、无法处理的实体（参数格式不对，422）等
+
+为保证程序健壮性。防止程序挂掉；告诉用户错误信息；便于开发者调试，需要错误处理。
+
+
+**错误处理中间件：koa-json-error**
+
+1. 安装 `npm i koa-json-error --save`
+
+2. 设置区分生产环境与开发环境： 安装 `npm i cross-env --save-dev`
+    
+    在 **package.json** 中设置
+    
+    ```python
+    "scripts": {
+        "start": "cross-env NODE_ENV=production node app",
+        "dev": "nodemon app"
+    },
+    ```
+3. 修改配置使其在生产环境下禁用错误堆栈 **stack** 的返回
+    
+    ```python 
+    const jsonError = require('koa-json-error')
+    
+    app.use(jsonError({
+        postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
+    }))
+    ```
+    为使所有请求接口使用错误处理，`app.use(jsonError())`需放置在前面。
+    
 
 #### App
 
@@ -279,4 +315,4 @@
 
 
     
-5.5
+6.5

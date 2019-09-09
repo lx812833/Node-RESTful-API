@@ -1,10 +1,14 @@
 const Koa = require("Koa")
 const bodyParser = require("koa-bodyparser")
+const jsonError = require('koa-json-error')
 
 const app = new Koa()
 
 const router = require('./routes')
 
+app.use(jsonError({
+    postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
+}))
 
 app.use(bodyParser())
 router(app) // 批量读取并注册
