@@ -9,11 +9,13 @@
   "author": "lx",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^5.2.1",
     "nodemon": "^1.19.1"
   },
   "dependencies": {
     "koa": "^2.8.1",
     "koa-bodyparser": "^2.5.0",
+    "koa-json-error": "^3.1.2",
     "koa-router": "^7.4.0"
   }
 }
