@@ -1,6 +1,7 @@
 const Koa = require("Koa")
 const bodyParser = require("koa-bodyparser")
 const jsonError = require('koa-json-error')
+const parameter = require('koa-parameter')
 
 const app = new Koa()
 
@@ -11,6 +12,7 @@ app.use(jsonError({
 }))
 
 app.use(bodyParser())
+app.use(parameter(app))
 router(app) // 批量读取并注册
 
 app.listen(3000, () => {

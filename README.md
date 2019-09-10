@@ -213,7 +213,32 @@
     }))
     ```
     为使所有请求接口使用错误处理，`app.use(jsonError())`需放置在前面。
+
+##### 使用 koa-parameter 校验参数
+
+1. 安装 **npm i koa-parameter --save**
+2. 导入并使用
     
+    ```python
+    const parameter = require('koa-parameter')
+    
+    // 由于需要在发出请求后进行校验参数，所以校验中间件放在请求之后
+    
+    app.use(bodyParser())
+    app.use(parameter(app))
+    ```
+    
+3. 在具体路由中写校验规则，如 users 创建用户接口
+    
+    ```python
+    ctx.verifyParams({
+        name: { type: 'string', required: true },
+        age: { type: 'number', required: false }
+    });
+    ```
+#### MongoDB
+
+##### NoSQL
 
 #### App
 
@@ -315,4 +340,4 @@
 
 
     
-6.5
+7.3
