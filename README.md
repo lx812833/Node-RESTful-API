@@ -238,7 +238,64 @@
     ```
 #### MongoDB
 
-##### NoSQL
+##### Mongoose
+
+**Mongoose**是一个开源的封装好的实现 `Node` 和 `MongoDB` 数据通讯的数据建模库。
+
+1. 安转 `npm i mongoose --seve`
+2. 连接 **Mongoose**
+    
+    在根目录下创建 `database` 文件夹，用来存放和数据库操作有关的文件。在 `database` 文件夹下，建立一个`init.js` 文件，用来作数据库的连接和一些初始化的事情。
+    
+    使用 `promise` ，确保成功连接数据库，需要对意外处理和逻辑处理。让程序增加健壮性。
+    
+    ```ptrhon
+    const mongoose = require("mongoose")
+    
+    // 定义所连接的数据库
+    const db = "mongodb://localhost/zhi-hu-api"
+    /**
+     * 
+     */
+    exports.connect = () => {
+        // 连接数据库
+        mongoose.connect(db)
+        let maxConnectTimes = 0
+        return new Promise((resolve, reject) => {
+            // 数据库连接事件监听
+            mongoose.connection.on("disconnected", err => {
+                console.log("数据库断开")
+                if (maxConnectTimes < 3) {
+                    maxConnectTimes++
+                    mongoose.connect(db)
+                } else {
+                    reject(err)
+                    throw new Error("数据库断开")
+                }
+            })
+            // 数据库连接错误
+            mongoose.connection.on("error", err => {
+                console.log("数据库错误")
+                if (maxConnectTimes < 3) {
+                    maxConnectTimes++
+                    mongoose.connect(db)
+                } else {
+                    reject(err)
+                    throw new Error("数据库错误")
+                }
+            })
+            // 数据库连接打开时，只需要连接一次once
+            mongoose.connection.once("open", () => {
+                console.log('MongoDB Connected successfully!')
+                resolve()
+            })
+        })
+    }
+    // { useNewUrlParser: true }
+    ```
+
+
+3. 
 
 #### App
 

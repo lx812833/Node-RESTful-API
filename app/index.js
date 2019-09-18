@@ -2,6 +2,7 @@ const Koa = require("Koa")
 const bodyParser = require("koa-bodyparser")
 const jsonError = require('koa-json-error')
 const parameter = require('koa-parameter')
+const mongoose = require('mongoose')
 
 const app = new Koa()
 
