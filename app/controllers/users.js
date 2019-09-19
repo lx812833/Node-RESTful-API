@@ -1,30 +1,33 @@
-const db = [{ name: "lx" }]
+const User = require("../database/schema/Users")
+
 class UsersControl {
-    find(ctx) {
-        ctx.body = db
+    async find(ctx) {
+        ctx.body = await User.find()
     }
-    findById(ctx) {
-        ctx.body = db[ctx.params.id * 1]
+    async findById(ctx) {
+        const user = await User.findById(ctx.params.id)
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = user
     }
-    create(ctx) {
+    async create(ctx) {
         ctx.verifyParams({
             name: { type: 'string', required: true },
-            age: { type: 'number', required: false }
         });
-        db.push(ctx.request.body)
-        ctx.body = ctx.request.body
+        const user = await new User(ctx.request.body).save()
+        ctx.body = user
     }
-    update(ctx) {
+    async update(ctx) {
         ctx.verifyParams({
-            name: { type: 'string', required: true },
-            age: { type: 'number', required: false }
+            name: { type: 'string', required: true }
         });
-        db[ctx.params.id * 1] = ctx.request.body
-        ctx.body = ctx.request.body
+        const user = await User.findOneAndUpdate(ctx.params.id, ctx.request.body)
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = user
     }
-    delete(ctx) {
-        db.splice(ctx.params.id * 1, 1)
-        ctx.status = 204
+    async delete(ctx) {
+        const user = await User.findOneAndDelete(ctx.params.id)
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = user
     }
 
 }

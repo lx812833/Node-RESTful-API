@@ -242,7 +242,8 @@
 
 **Mongoose**是一个开源的封装好的实现 `Node` 和 `MongoDB` 数据通讯的数据建模库。
 
-1. 安转 `npm i mongoose --seve`
+
+1. 安转 `npm i mongoose --seve` 安装 `glob`导入所有的 `schema`: `npm i glob --save`
 2. 连接 **Mongoose**
     
     在根目录下创建 `database` 文件夹，用来存放和数据库操作有关的文件。在 `database` 文件夹下，建立一个`init.js` 文件，用来作数据库的连接和一些初始化的事情。
@@ -251,12 +252,22 @@
     
     ```ptrhon
     const mongoose = require("mongoose")
+    const glob = require("glob")
     
-    // 定义所连接的数据库
-    const db = "mongodb://localhost/zhi-hu-api"
     /**
-     * 
+     * 设置  mongoose.set('useFindAndModify', false) 使 mongoose数据库查询与删除不报异常
+     * 允许使用 * 符号，来写一个glob规则
+     * resolve：将一系列路径或路径段解析为绝对路径
      */
+     
+    mongoose.set('useFindAndModify', false)
+    const { resolve } = require("path")
+    
+    // 引入所有定义的schema
+    exports.initSchemas = () => {
+        glob.sync(resolve(__dirname, "./schema/", "**/*.js")).forEach(require)
+    }
+
     exports.connect = () => {
         // 连接数据库
         mongoose.connect(db)
@@ -291,9 +302,7 @@
             })
         })
     }
-    // { useNewUrlParser: true }
     ```
-
 
 3. 
 
@@ -309,6 +318,9 @@
     ├── controllers // 控制器
     ├──── home.js  // home
     ├──── users.js  //  users控制器
+    ├── database // 数据库
+    ├──── schema // 数据模型
+    ├──── init.js // 数据库连接设置
     ```
 
 ##### controllers控制器
