@@ -407,6 +407,36 @@
     module.exports = router
     ```
 
+#### 用户认证与授权
+
+##### Session
+
+1. 相比`JWT`，最大的优势就在于可以主动清除 `session`。
+2. `session`保存在服务器端，相对较为安全。
+3. 结合`cookie`使用，较为灵活，兼容性较好。但是在跨域场景表现不好。
 
     
-7.3
+##### JWT
+
+**`JWT`** 的构成
+
+根据官网的定义，JSON Web Token（以下简称 JWT）是一套开放的标准（RFC 7519），它定义了一套简洁（compact）且 URL 安全（URL-safe）的方案，以安全地在客户端和服务器之间传输 JSON 格式的信息。
+
+1. 头部（Header）
+
+    * typ（类型）：token的类型，这里固定位为 `JWT`
+    * alg（算法）：使用的hash算法，例如：HMAC SHA256 或者 RSA
+
+2. 有效载荷（Payload）
+    
+
+    * 存储需要传递的信息。如用户ID、用户名等。
+    * 元数据。如过期时间、发布人等。
+    * 与Header不同，Payload可以加密。
+
+3. 签名（Signature）
+
+    * 对Header和Payload部分进行签名
+    * 保证Token在传输的过程中没有被篡改或者损坏。
+    
+8.3
