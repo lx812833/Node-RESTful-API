@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "glob": "^7.1.4",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.8.1",
     "koa-bodyparser": "^2.5.0",
     "koa-json-error": "^3.1.2",
