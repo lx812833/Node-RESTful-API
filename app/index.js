@@ -1,8 +1,10 @@
 const Koa = require("Koa")
-const bodyParser = require("koa-bodyparser")
+const koaBody = require("koa-body")
+const koaStatic = require("koa-static")
 const jsonError = require('koa-json-error')
 const parameter = require('koa-parameter')
 const mongoose = require('mongoose')
+const path = require("path")
 
 const app = new Koa()
 
@@ -16,12 +18,26 @@ const { connect, initSchemas } = require("./database/init.js");
     initSchemas()
 })()
 
+// 生成图片链接
+app.use(koaStatic(path.join(__dirname, "public")))
 
 app.use(jsonError({
     postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }))
 
-app.use(bodyParser())
+// 文件上传
+app.use(koaBody({
+    multipart: true, // 支持文件上传
+    encoding: 'gzip',
+    formidable: {
+        uploadDir: path.join(__dirname, "/public/uploads"),   // 上传文件目录
+        keepExtensions: true, // 保留扩展名
+        maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
+        onFileBegin: (name, file) => { // 文件上传前的设置
+
+        },
+    }
+}))
 app.use(parameter(app))
 router(app) // 批量读取并注册
 

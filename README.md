@@ -319,8 +319,11 @@
     ├──── home.js  // home
     ├──── users.js  //  users控制器
     ├── database // 数据库
-    ├──── schema // 数据模型
-    ├──── init.js // 数据库连接设置
+    ├──── init.js  //  数据库连接设置文件
+    ├──── schema  // schema
+    ├───── Users.js  //  用户数据库
+    ├── public  //  公共文件
+    ├──── upload  //  图片上传目录
     ```
 
 ##### controllers控制器
@@ -438,5 +441,104 @@
 
     * 对Header和Payload部分进行签名
     * 保证Token在传输的过程中没有被篡改或者损坏。
+
+
+##### koa-jwt 实现认证与授权
+
+1. `npm install koa-jwt --save` 下载
+2. 使用中间件保护接口，实现认证
     
-8.7
+    ```python
+    const jwt = require("koa-jwt")
+
+    引入秘钥
+    const { secret } = require("../config")
+    
+    const auth = jwt({ secret });
+    
+    实现认证
+    
+    router.delete("/:id", auth, checkOwner, del)
+    ```
+
+3. 使用中间件获取用户信息
+
+
+
+#### 图片上传
+
+##### koa-body
+
+之前使用 `koa2` 的时候，处理 `post` 请求使用的是 `koa-bodyparser`，同时如果是`图片上传`使用的是 `koa-multer`。
+
+但是这两者可以通过 `koa-body` 代替，**并且只是用 koa-body 即可**。[koa-body文档](http://www.ptbird.cn/koa-body.html)
+
+1. 安装`npm i koa-body --save`
+2. 全局设置
+
+    ```python
+    const koaBody = require('koa-body')
+    const path = require("path")
+    
+    const app = new koa()
+    
+    app.use(koaBody({
+        multipart: true, // 支持文件上传
+        formidable: {
+            uploadDir: path.join(__dirname, "/public/uploads"),   // 上传文件目录
+            keepExtensions: true, // 保留扩展名
+            maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
+            onFileBegin: (name, file) => { // 文件上传前的设置
+            },
+        }
+    }))
+    ```
+
+3. 图片上传路由
+    
+    ```python
+    class HomeControl {
+        upload(ctx) {
+            const file = ctx.request.files.file
+            /**
+             * 获取上传文件信息 ctx.request.files
+             *  size    文件大小
+                path    文件上传后的目录
+                name    文件的原始名称
+                type    文件类型
+             * 
+             */
+            ctx.body = { path: file.path }
+        }
+    }
+    module.exports = new HomeControl()
+    ```
+    
+    
+##### koa-static
+
+使用`koa-static`生成图片链接
+
+1. 安装`npm i koa-static --save`
+2. 设置静态文件目录
+    
+    ```python
+    const koaStatic = require("koa-static")
+    
+    app.use(koaStatic(path.join(__dirname, "public")))
+    ```
+
+3. 生成图片链接
+    
+    ```python
+    upload(ctx) {
+        const file = ctx.request.files.file
+        const basename = path.basename(file.path) // 解析图片相对路径
+        // ctx.origin 域名
+        ctx.body = { url: `${ctx.origin}/uploads/${basename}` }
+    }
+    ```    
+
+
+
+9.4
