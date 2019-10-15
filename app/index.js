@@ -3,6 +3,7 @@ const koaBody = require("koa-body")
 const koaStatic = require("koa-static")
 const jsonError = require('koa-json-error')
 const parameter = require('koa-parameter')
+const cors = require('koa-cors')
 const mongoose = require('mongoose')
 const path = require("path")
 
@@ -25,10 +26,9 @@ app.use(jsonError({
     postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }))
 
-// 文件上传
+//文件上传
 app.use(koaBody({
     multipart: true, // 支持文件上传
-    encoding: 'gzip',
     formidable: {
         uploadDir: path.join(__dirname, "/public/uploads"),   // 上传文件目录
         keepExtensions: true, // 保留扩展名
@@ -38,8 +38,23 @@ app.use(koaBody({
         },
     }
 }))
+
 app.use(parameter(app))
-router(app) // 批量读取并注册
+
+// 跨域
+app.use(cors({
+    origin: (ctx) => {
+        if (ctx.url === '/test') {
+            return "*"; // 允许来自所有域名请求
+        }
+        return 'http://localhost:8080';
+    },
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}))
+
+// 路由 批量读取并注册
+router(app)
 
 app.listen(3000, () => {
     console.log(`Server is running on 3000`)

@@ -33,16 +33,19 @@ const userSchema = new Schema({
         type: String
     },
     locations: {
-        type: [{ type: String }]   // 字符串数组
+        type: [{ type: String }],   // 字符串数组
+        select: false
     },
     business: {
-        type: String
+        type: String,
+        select: false
     },
     employments: {
         type: [{
             company: { type: String },
             job: { type: String }
-        }]
+        }],
+        select: false
     },
     educations: {
         type: [{
@@ -51,7 +54,8 @@ const userSchema = new Schema({
             diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
             entrance_year: { type: Number },
             graduation_year: { type: Number }
-        }]
+        }],
+        select: false
     }
 })
 
