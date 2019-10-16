@@ -15,7 +15,7 @@ router.get("/", find)
 
 router.post("/", create)
 
-router.get("/:id", findById)
+router.get("/:id", auth, checkOwner, findById)
 
 // 添加认证、授权中间件
 // 修改、删除用户添加认证权限

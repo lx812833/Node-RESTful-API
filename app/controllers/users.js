@@ -12,7 +12,7 @@ class UsersControl {
         const selectFields = fields.split(";").filter(f => f).map(f => " +" + f).join("")
         const user = await User.findById(ctx.params.id).select(selectFields)
         if (!user) ctx.throw(404, "用户不存在")
-        ctx.body = user
+        ctx.body = { data: user }
     }
     async create(ctx) {
         ctx.verifyParams({
@@ -54,10 +54,10 @@ class UsersControl {
         /**
          * sign: Function token签名
          * secret: 秘钥
-         * expiresIn: 过期时间
+         * expiresIn: 过期时间 1天
          */
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
-        ctx.body = { token }
+        ctx.body = { token, _id, name }
     }
 
     async checkOwner(ctx, next) {
