@@ -5,7 +5,8 @@ const router = new Router({ prefix: "/users" })
 const {
     find, findById, create,
     update, delete: del, login,
-    checkOwner
+    checkOwner, listFollowing, listFollowers,
+    follow, unfollow
 } = require("../controllers/users")
 
 const { secret } = require("../config")
@@ -17,12 +18,22 @@ router.post("/", create)
 
 router.get("/:id", auth, checkOwner, findById)
 
-// 添加认证、授权中间件
-// 修改、删除用户添加认证权限
+//auth: 添加认证、授权中间件
+//checkOwner: 修改、删除用户添加认证权限
 router.patch("/:id", auth, checkOwner, update)
 
 router.delete("/:id", auth, checkOwner, del)
 
 router.post("/login", login)
+
+// 关注者列表 
+router.get("/:id/following", auth, checkOwner, listFollowing)
+
+router.get("/:id/followers", auth, checkOwner, listFollowers)
+
+router.put("/following/:id", auth, follow)
+
+router.delete("/following/:id", auth, unfollow)
+
 
 module.exports = router

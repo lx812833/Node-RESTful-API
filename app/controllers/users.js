@@ -10,6 +10,9 @@ class UsersControl {
     async findById(ctx) {
         const { fields = '' } = ctx.query;
         const selectFields = fields.split(";").filter(f => f).map(f => " +" + f).join("")
+        /**
+         * select: 请求参数选择字段
+         */
         const user = await User.findById(ctx.params.id).select(selectFields)
         if (!user) ctx.throw(404, "用户不存在")
         ctx.body = { data: user }
@@ -59,7 +62,35 @@ class UsersControl {
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
         ctx.body = { token, _id, name }
     }
-
+    async listFollowing(ctx) {
+        /**
+         * populate: 引用其它集合中的文档(schema)
+         */
+        const user = await User.findById(ctx.params.id).select("+following").populate("following")
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = user.following
+    }
+    async listFollowers(ctx) {
+        const users = await User.find({ following: ctx.params.id })
+        ctx.body = users
+    }
+    async follow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+following")
+        if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
+            me.following.push(ctx.params.id) // 关注者列表
+            me.save()
+        }
+        ctx.status = 204
+    }
+    async unfollow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+following")
+        const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index !== -1) {
+            me.following.splice(index, 1)
+            me.save()
+        }
+        ctx.status = 204
+    }
     async checkOwner(ctx, next) {
         if (ctx.params.id !== ctx.state.user._id) ctx.throw(403, "没有权限")
         await next()
