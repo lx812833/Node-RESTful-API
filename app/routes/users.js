@@ -6,7 +6,7 @@ const {
     find, findById, create,
     update, delete: del, login,
     checkOwner, listFollowing, listFollowers,
-    follow, unfollow
+    checkUserExist, follow, unfollow
 } = require("../controllers/users")
 
 const { secret } = require("../config")
@@ -31,9 +31,9 @@ router.get("/:id/following", auth, checkOwner, listFollowing)
 
 router.get("/:id/followers", auth, checkOwner, listFollowers)
 
-router.put("/following/:id", auth, follow)
+router.put("/following/:id", auth, checkUserExist, follow)
 
-router.delete("/following/:id", auth, unfollow)
+router.delete("/following/:id", auth, checkUserExist, unfollow)
 
 
 module.exports = router
