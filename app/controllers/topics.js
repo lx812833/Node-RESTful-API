@@ -2,7 +2,14 @@ const Topic = require("../database/schema/Topics")
 
 class topicControl {
     async find(ctx) {
-        ctx.body = await Topic.find()
+        /**
+         * limit：每页 perPage 项
+         * skip：跳过前面 page * per_page 项，返回从page * per_page + 1项到 ( page + 1) * per_page
+         */
+        const { per_page = 2 } = ctx.query
+        const page = Math.max(ctx.query.page * 1, 1) - 1
+        const perPage = Math.max(per_page * 1, 1)
+        ctx.body = await Topic.find().limit(perPage).skip(page * per_page)
     }
     async findById(ctx) {
         const { fields = '' } = ctx.query
