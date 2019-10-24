@@ -18,7 +18,10 @@ class UsersControl {
          */
         const user = await User.findById(ctx.params.id).select(selectFields)
         if (!user) ctx.throw(404, "用户不存在")
-        ctx.body = { data: user }
+        ctx.body = {
+            code: 200,
+            data: { user }
+        }
     }
     async create(ctx) {
         ctx.verifyParams({
@@ -33,7 +36,10 @@ class UsersControl {
         const repeatedUser = await User.findOne({ name })
         if (repeatedUser) ctx.throw(409, "用户已存在")
         const user = await new User(ctx.request.body).save()
-        ctx.body = user
+        ctx.body = {
+            code: 200,
+            data: { name: user.name }
+        } // 只返回用户姓名
     }
     async update(ctx) {
         ctx.verifyParams({
@@ -42,12 +48,18 @@ class UsersControl {
         });
         const user = await User.findOneAndUpdate(ctx.params.id, ctx.request.body)
         if (!user) ctx.throw(404, "用户不存在")
-        ctx.body = user
+        ctx.body = {
+            code: 200,
+            data: { user }
+        }
     }
     async delete(ctx) {
         const user = await User.findOneAndDelete(ctx.params.id)
         if (!user) ctx.throw(404, "用户不存在")
-        ctx.body = user
+        ctx.body = {
+            code: 200,
+            data: { name: user.name }
+        }
     }
     async login(ctx) {
         ctx.verifyParams({
@@ -63,7 +75,14 @@ class UsersControl {
          * expiresIn: 过期时间 1天
          */
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
-        ctx.body = { token, _id, name }
+        ctx.body = {
+            code: 200,
+            data: {
+                token,
+                _id,
+                name
+            }
+        }
     }
     async listFollowing(ctx) {
         /**
@@ -75,7 +94,12 @@ class UsersControl {
     }
     async listFollowers(ctx) {
         const users = await User.find({ following: ctx.params.id })
-        ctx.body = users
+        ctx.body = {
+            code: 200,
+            data: {
+                followers: users
+            }
+        }
     }
     async checkUserExist(ctx, next) {
         const user = await User.findById(ctx.params.id)

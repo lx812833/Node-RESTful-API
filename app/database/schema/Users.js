@@ -8,9 +8,9 @@ const userSchema = new Schema({
         type: Number,
         select: false
     },
-    userId: {
-        type: objectId  // 主键
-    },
+    // userId: {
+    //     type: ObjectId  // 主键
+    // },
     name: {
         type: String,
         required: true
