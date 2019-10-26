@@ -1,4 +1,5 @@
 const Topic = require("../database/schema/Topics")
+const User = require("../database/schema/Users")
 
 class topicControl {
     async find(ctx) {
@@ -37,6 +38,21 @@ class topicControl {
         const topic = await Topic.findOneAndUpdate(ctx.params.id, ctx.request.body)
         if (!topic) ctx.throw(404, "话题不存在")
         ctx.body = topic
+    }
+    async checkTopicExist(ctx, next) {
+        const topic = await Topic.findById(ctx.params.id)
+        if (!topic) ctx.throw(404, "话题不存在")
+        await next()
+    }
+    async listFollowers(ctx) {
+        // followingTopics：读取用户数据库followingTopics字段
+        const users = await User.find({ followingTopics: ctx.params.id })
+        ctx.body = {
+            code: 200,
+            data: {
+                followers: users
+            }
+        }
     }
 }
 

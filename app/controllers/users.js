@@ -84,13 +84,43 @@ class UsersControl {
             }
         }
     }
+    async follow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+following")
+        if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
+            me.following.push(ctx.params.id) // 关注者列表
+            me.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "关注成功"
+            }
+        }
+    }
+    async unfollow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+following")
+        const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index !== -1) {
+            me.following.splice(index, 1)
+            me.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "取消成功"
+            }
+        }
+    }
     async listFollowing(ctx) {
         /**
          * populate: 引用其它集合中的文档(schema)
          */
         const user = await User.findById(ctx.params.id).select("+following").populate("following")
         if (!user) ctx.throw(404, "用户不存在")
-        ctx.body = user.following
+        ctx.body = {
+            code: 200,
+            data: user.following
+        }
     }
     async listFollowers(ctx) {
         const users = await User.find({ following: ctx.params.id })
@@ -106,22 +136,43 @@ class UsersControl {
         if (!user) ctx.throw(404, "用户不存在")
         await next()
     }
-    async follow(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+following")
-        if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
-            me.following.push(ctx.params.id) // 关注者列表
+    async followTopics(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+followingTopics")
+        if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
+            me.followingTopics.push(ctx.params.id) // 关注者列表
             me.save()
         }
-        ctx.status = 204
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "关注成功"
+            }
+        }
     }
-    async unfollow(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+following")
-        const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+    async unfollowTopics(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+followingTopics")
+        const index = me.followingTopics.map(id => id.toString()).indexOf(ctx.params.id)
         if (index !== -1) {
-            me.following.splice(index, 1)
+            me.followingTopics.splice(index, 1)
             me.save()
         }
-        ctx.status = 204
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "取消关注成功"
+            }
+        }
+    }
+    async listFollowingTopics(ctx) {
+        /**
+         * populate: 引用其它集合中的文档(schema)
+         */
+        const user = await User.findById(ctx.params.id).select("+followingTopics").populate("followingTopics")
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = {
+            code: 200,
+            data: user.followingTopics
+        }
     }
     async checkOwner(ctx, next) {
         if (ctx.params.id !== ctx.state.user._id) ctx.throw(403, "没有权限")
