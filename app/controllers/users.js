@@ -1,6 +1,8 @@
 const jsonwebtoken = require("jsonwebtoken")
 
 const User = require("../database/schema/Users")
+const Question = require("../database/schema/Questions")
+
 const { secret } = require("../config")
 
 class UsersControl {
@@ -172,6 +174,15 @@ class UsersControl {
         ctx.body = {
             code: 200,
             data: user.followingTopics
+        }
+    }
+    async listQuestions(ctx) {
+        const question = await Question.find({ questioner: ctx.params.id })
+        ctx.body = {
+            code: 200,
+            data: {
+                questions: question
+            }
         }
     }
     async checkOwner(ctx, next) {

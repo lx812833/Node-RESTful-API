@@ -1,16 +1,11 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose
 
-let objectId = Schema.Types.ObjectId
-
 const userSchema = new Schema({
     __v: { // 设置取消返回__v字段
         type: Number,
         select: false
     },
-    // userId: {
-    //     type: ObjectId  // 主键
-    // },
     name: {
         type: String,
         required: true

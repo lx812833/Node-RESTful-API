@@ -19,6 +19,6 @@ router.get("/:id", auth, checkTopicExist, findById)
 //auth: 添加认证、授权中间件
 router.patch("/:id", auth, checkTopicExist, update)
 
-router.get("/:id/followers", checkTopicExist, listFollowers)
+router.get("/:id/followers", auth, checkTopicExist, listFollowers)
 
 module.exports = router

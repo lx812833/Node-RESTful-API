@@ -7,7 +7,8 @@ const {
     update, delete: del, login,
     checkOwner, listFollowing, listFollowers,
     checkUserExist, follow, unfollow,
-    followTopics, unfollowTopics, listFollowingTopics
+    followTopics, unfollowTopics, listFollowingTopics,
+    listQuestions
 } = require("../controllers/users")
 
 const { checkTopicExist } = require("../controllers/topics")
@@ -43,5 +44,6 @@ router.put("/followingTopics/:id", auth, checkTopicExist, followTopics)
 
 router.delete("/followingTopics/:id", auth, checkTopicExist, unfollowTopics)
 
+router.get("/:id/questions", auth, listQuestions)
 
 module.exports = router
