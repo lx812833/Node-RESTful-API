@@ -1,5 +1,6 @@
 const Topic = require("../database/schema/Topics")
 const User = require("../database/schema/Users")
+const Question = require("../database/schema/Questions")
 
 class topicControl {
     async find(ctx) {
@@ -51,6 +52,15 @@ class topicControl {
             code: 200,
             data: {
                 followers: users
+            }
+        }
+    }
+    async listQuestions(ctx) {
+        const question = await Question.find({ topics: ctx.params.id })
+        ctx.body = {
+            code: 200,
+            data: {
+                question
             }
         }
     }

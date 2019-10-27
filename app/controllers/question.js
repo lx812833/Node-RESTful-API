@@ -30,7 +30,8 @@ class QuestionControl {
     async findById(ctx) {
         const { fields = '' } = ctx.query
         const selectFields = fields.split(";").filter(f => f).map(f => " +" + f).join("")
-        const question = await Question.findById(ctx.params.id).select(selectFields).populate("questioner")
+        // 问题与话题多对多
+        const question = await Question.findById(ctx.params.id).select(selectFields).populate("questioner topics")
         if (!question) ctx.throw(404, "话题不存在")
         ctx.body = {
             code: 200,

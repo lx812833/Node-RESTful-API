@@ -18,7 +18,11 @@ const questionSchema = new Schema({
         type: Schema.Types.ObjectId, ref: "User",
         required: false
     },
-
+    // 一个问题话题有限，但一个话题问题可能无限，所以在问题schema里设置与话题多对多关系
+    topics: {
+        type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
+        select: false
+    }
 })
 
 module.exports = Question = mongoose.model("Question", questionSchema)

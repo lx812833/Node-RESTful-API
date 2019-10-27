@@ -5,6 +5,7 @@ const router = new Router({ prefix: "/topics" })
 const {
     find, findById, create, update,
     checkTopicExist, listFollowers,
+    listQuestions,
 } = require("../controllers/topics")
 
 const { secret } = require("../config")
@@ -20,5 +21,7 @@ router.get("/:id", auth, checkTopicExist, findById)
 router.patch("/:id", auth, checkTopicExist, update)
 
 router.get("/:id/followers", auth, checkTopicExist, listFollowers)
+
+router.get("/:id/questions", auth, checkTopicExist, listQuestions)
 
 module.exports = router
