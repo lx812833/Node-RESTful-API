@@ -8,10 +8,13 @@ const {
     checkOwner, listFollowing, listFollowers,
     checkUserExist, follow, unfollow,
     followTopics, unfollowTopics, listFollowingTopics,
-    listQuestions
+    listQuestions,
+    likeAnswers, unlikeAnswers, listLikingAnswers,
+    dislikeAnswers, undislikeAnswers, listDislikingAnswers
 } = require("../controllers/users")
 
 const { checkTopicExist } = require("../controllers/topics")
+const { checkAnswerExist } = require("../controllers/answer")
 const { secret } = require("../config")
 const auth = jwt({ secret });
 
@@ -45,5 +48,19 @@ router.put("/followingTopics/:id", auth, checkTopicExist, followTopics)
 router.delete("/followingTopics/:id", auth, checkTopicExist, unfollowTopics)
 
 router.get("/:id/questions", auth, listQuestions)
+
+router.get("/:id/likingAnswers", auth, checkOwner, listLikingAnswers)
+
+// 赞与踩互斥 14-3 15
+router.put("/likingAnswers/:id", auth, checkAnswerExist, likeAnswers, undislikeAnswers)
+
+router.delete("/likingAnswers/:id", auth, checkAnswerExist, unlikeAnswers)
+
+router.get("/:id/dislikingAnswers", auth, checkOwner, listDislikingAnswers)
+
+router.put("/dislikingAnswers/:id", auth, checkAnswerExist, dislikeAnswers, unlikeAnswers)
+
+router.delete("/dislikingAnswers/:id", auth, checkAnswerExist, undislikeAnswers)
+
 
 module.exports = router

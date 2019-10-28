@@ -60,7 +60,17 @@ const userSchema = new Schema({
     followingTopics: {
         type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
         select: false
-    }
+    },
+    // 攒
+    likingAnswers: {
+        type: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+        select: false
+    },
+    // 踩
+    dislikingAnswers: {
+        type: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+        select: false
+    },
 })
 
 module.exports = User = mongoose.model("User", userSchema)

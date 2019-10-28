@@ -2,6 +2,7 @@ const jsonwebtoken = require("jsonwebtoken")
 
 const User = require("../database/schema/Users")
 const Question = require("../database/schema/Questions")
+const Answer = require("../database/schema/Answer")
 
 const { secret } = require("../config")
 
@@ -86,6 +87,15 @@ class UsersControl {
             }
         }
     }
+    async checkUserExist(ctx, next) {
+        const user = await User.findById(ctx.params.id)
+        if (!user) ctx.throw(404, "用户不存在")
+        await next()
+    }
+    async checkOwner(ctx, next) {
+        if (ctx.params.id !== ctx.state.user._id) ctx.throw(403, "没有权限")
+        await next()
+    }
     async follow(ctx) {
         const me = await User.findById(ctx.state.user._id).select("+following")
         if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
@@ -132,11 +142,6 @@ class UsersControl {
                 followers: users
             }
         }
-    }
-    async checkUserExist(ctx, next) {
-        const user = await User.findById(ctx.params.id)
-        if (!user) ctx.throw(404, "用户不存在")
-        await next()
     }
     async followTopics(ctx) {
         const me = await User.findById(ctx.state.user._id).select("+followingTopics")
@@ -185,9 +190,89 @@ class UsersControl {
             }
         }
     }
-    async checkOwner(ctx, next) {
-        if (ctx.params.id !== ctx.state.user._id) ctx.throw(403, "没有权限")
-        await next()
+    // 喜欢与不喜欢
+    async likeAnswers(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+likingAnswers")
+        if (!me.likingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            me.likingAnswers.push(ctx.params.id)
+            me.save()
+            /**
+             * $inc：字段更新操作
+             */
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: 1 } })
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "喜欢成功"
+            }
+        }
+    }
+    async unlikeAnswers(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+likingAnswers")
+        const index = me.likingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index !== -1) {
+            me.likingAnswers.splice(index, 1)
+            me.save()
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: -1 } })
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "取消喜欢成功"
+            }
+        }
+    }
+    async listLikingAnswers(ctx) {
+        /**
+         * populate: 引用其它集合中的文档(schema)
+         */
+        const user = await User.findById(ctx.params.id).select("+likingAnswers").populate("likingAnswers")
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = {
+            code: 200,
+            data: {
+                answers: user.likingAnswers
+            }
+        }
+    }
+    // 攒与踩
+    async dislikeAnswers(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
+        if (!me.dislikingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            me.dislikingAnswers.push(ctx.params.id) // 点赞列表
+            me.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "点赞成功"
+            }
+        }
+    }
+    async undislikeAnswers(ctx) {
+        const me = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
+        const index = me.dislikingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index !== -1) {
+            me.dislikingAnswers.splice(index, 1)
+            me.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "取消点赞成功"
+            }
+        }
+    }
+    async listDislikingAnswers(ctx) {
+        const user = await User.findById(ctx.params.id).select('+dislikingAnswers').populate('dislikingAnswers')
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = {
+            code: 200,
+            data: {
+                answers: user.dislikingAnswers
+            }
+        }
     }
 }
 module.exports = new UsersControl()
