@@ -10,7 +10,8 @@ const {
     followTopics, unfollowTopics, listFollowingTopics,
     listQuestions,
     likeAnswers, unlikeAnswers, listLikingAnswers,
-    dislikeAnswers, undislikeAnswers, listDislikingAnswers
+    dislikeAnswers, undislikeAnswers, listDislikingAnswers,
+    collectAnswer, uncollectAnswer, listCollectingAnswers
 } = require("../controllers/users")
 
 const { checkTopicExist } = require("../controllers/topics")
@@ -49,9 +50,10 @@ router.delete("/followingTopics/:id", auth, checkTopicExist, unfollowTopics)
 
 router.get("/:id/questions", auth, listQuestions)
 
+// 赞与踩互斥
+
 router.get("/:id/likingAnswers", auth, checkOwner, listLikingAnswers)
 
-// 赞与踩互斥 14-3 15
 router.put("/likingAnswers/:id", auth, checkAnswerExist, likeAnswers, undislikeAnswers)
 
 router.delete("/likingAnswers/:id", auth, checkAnswerExist, unlikeAnswers)
@@ -62,5 +64,12 @@ router.put("/dislikingAnswers/:id", auth, checkAnswerExist, dislikeAnswers, unli
 
 router.delete("/dislikingAnswers/:id", auth, checkAnswerExist, undislikeAnswers)
 
+// 收藏答案
+
+router.get("/:id/collectAnswers", auth, checkOwner, listCollectingAnswers)
+
+router.put("/collectAnswers/:id", auth, checkAnswerExist, collectAnswer)
+
+router.delete("/collectAnswers/:id", auth, checkAnswerExist, uncollectAnswer)
 
 module.exports = router

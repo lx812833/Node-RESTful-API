@@ -97,10 +97,10 @@ class UsersControl {
         await next()
     }
     async follow(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+following")
-        if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
-            me.following.push(ctx.params.id) // 关注者列表
-            me.save()
+        const item = await User.findById(ctx.state.user._id).select("+following")
+        if (!item.following.map(id => id.toString()).includes(ctx.params.id)) {
+            item.following.push(ctx.params.id) // 关注者列表
+            item.save()
         }
         ctx.body = {
             code: 200,
@@ -110,11 +110,11 @@ class UsersControl {
         }
     }
     async unfollow(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+following")
-        const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+        const item = await User.findById(ctx.state.user._id).select("+following")
+        const index = item.following.map(id => id.toString()).indexOf(ctx.params.id)
         if (index !== -1) {
-            me.following.splice(index, 1)
-            me.save()
+            item.following.splice(index, 1)
+            item.save()
         }
         ctx.body = {
             code: 200,
@@ -144,10 +144,10 @@ class UsersControl {
         }
     }
     async followTopics(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+followingTopics")
-        if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
-            me.followingTopics.push(ctx.params.id) // 关注者列表
-            me.save()
+        const item = await User.findById(ctx.state.user._id).select("+followingTopics")
+        if (!item.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
+            item.followingTopics.push(ctx.params.id) // 关注者列表
+            item.save()
         }
         ctx.body = {
             code: 200,
@@ -157,11 +157,11 @@ class UsersControl {
         }
     }
     async unfollowTopics(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+followingTopics")
-        const index = me.followingTopics.map(id => id.toString()).indexOf(ctx.params.id)
+        const item = await User.findById(ctx.state.user._id).select("+followingTopics")
+        const index = item.followingTopics.map(id => id.toString()).indexOf(ctx.params.id)
         if (index !== -1) {
-            me.followingTopics.splice(index, 1)
-            me.save()
+            item.followingTopics.splice(index, 1)
+            item.save()
         }
         ctx.body = {
             code: 200,
@@ -191,11 +191,11 @@ class UsersControl {
         }
     }
     // 喜欢与不喜欢
-    async likeAnswers(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+likingAnswers")
-        if (!me.likingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
-            me.likingAnswers.push(ctx.params.id)
-            me.save()
+    async likeAnswers(ctx, next) {
+        const item = await User.findById(ctx.state.user._id).select("+likingAnswers")
+        if (!item.likingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            item.likingAnswers.push(ctx.params.id)
+            item.save()
             /**
              * $inc：字段更新操作
              */
@@ -204,22 +204,23 @@ class UsersControl {
         ctx.body = {
             code: 200,
             data: {
-                message: "喜欢成功"
+                message: "赞一个"
             }
         }
+        await next()
     }
     async unlikeAnswers(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+likingAnswers")
-        const index = me.likingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+        const item = await User.findById(ctx.state.user._id).select("+likingAnswers")
+        const index = item.likingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
         if (index !== -1) {
-            me.likingAnswers.splice(index, 1)
-            me.save()
+            item.likingAnswers.splice(index, 1)
+            item.save()
             await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: -1 } })
         }
         ctx.body = {
             code: 200,
             data: {
-                message: "取消喜欢成功"
+                message: "取消成功"
             }
         }
     }
@@ -237,30 +238,31 @@ class UsersControl {
         }
     }
     // 攒与踩
-    async dislikeAnswers(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
-        if (!me.dislikingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
-            me.dislikingAnswers.push(ctx.params.id) // 点赞列表
-            me.save()
+    async dislikeAnswers(ctx, next) {
+        const item = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
+        if (!item.dislikingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            item.dislikingAnswers.push(ctx.params.id) // 点赞列表
+            item.save()
         }
         ctx.body = {
             code: 200,
             data: {
-                message: "点赞成功"
+                message: "踩一个"
             }
         }
+        await next()
     }
     async undislikeAnswers(ctx) {
-        const me = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
-        const index = me.dislikingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+        const item = await User.findById(ctx.state.user._id).select("+dislikingAnswers")
+        const index = item.dislikingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
         if (index !== -1) {
-            me.dislikingAnswers.splice(index, 1)
-            me.save()
+            item.dislikingAnswers.splice(index, 1)
+            item.save()
         }
         ctx.body = {
             code: 200,
             data: {
-                message: "取消点赞成功"
+                message: "取消成功"
             }
         }
     }
@@ -271,6 +273,44 @@ class UsersControl {
             code: 200,
             data: {
                 answers: user.dislikingAnswers
+            }
+        }
+    }
+    // 收藏答案
+    async collectAnswer(ctx) {
+        const item = await User.findById(ctx.state.user._id).select('collectingAnswers')
+        if (!item.collectingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            item.collectingAnswers.push(ctx.params.id)
+            item.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "收藏成功"
+            }
+        }
+    }
+    async uncollectAnswer(ctx) {
+        const item = await User.findById(ctx.state.user._id).select("+collectingAnswers")
+        const index = item.collectingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index !== -1) {
+            item.collectingAnswers.splice(index, 1)
+            item.save()
+        }
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "取消成功"
+            }
+        }
+    }
+    async listCollectingAnswers(ctx) {
+        const user = await User.findById(ctx.params.id).select('collectingAnswers').populate('collectingAnswers')
+        if (!user) ctx.throw(404, "用户不存在")
+        ctx.body = {
+            code: 200,
+            data: {
+                collects: user.collectingAnswers
             }
         }
     }
