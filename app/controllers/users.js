@@ -11,7 +11,11 @@ class UsersControl {
         const { per_page = 10 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
         const perPage = Math.max(per_page * 1, 1)
-        ctx.body = await User.find({ name: new RegExp(ctx.query.keyword) }).limit(perPage).skip(page * perPage)
+        const users = await User.find({ name: new RegExp(ctx.query.keyword) }).limit(perPage).skip(page * perPage)
+        ctx.body = {
+            code: 200,
+            data: users
+        }
     }
     async findById(ctx) {
         const { fields = '' } = ctx.query;
