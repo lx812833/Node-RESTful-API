@@ -45,7 +45,10 @@ class UsersControl {
         const user = await new User(ctx.request.body).save()
         ctx.body = {
             code: 200,
-            data: { name: user.name }
+            data: {
+                message: "用户创建成功",
+                name: user.name 
+            }
         } // 只返回用户姓名
     }
     async update(ctx) {
@@ -85,6 +88,7 @@ class UsersControl {
         ctx.body = {
             code: 200,
             data: {
+                message: "登录成功",
                 token,
                 _id,
                 name
