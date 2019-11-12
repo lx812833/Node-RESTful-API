@@ -3,8 +3,7 @@ const koaBody = require("koa-body")
 const koaStatic = require("koa-static")
 const jsonError = require('koa-json-error')
 const parameter = require('koa-parameter')
-const cors = require('koa-cors')
-const mongoose = require('mongoose')
+const cors = require('koa2-cors')
 const path = require("path")
 
 const app = new Koa()
@@ -42,17 +41,7 @@ app.use(koaBody({
 app.use(parameter(app))
 
 // 跨域
-app.use(cors({
-    origin: (ctx) => {
-        if (ctx.url === '/test') {
-            return "*"; // 允许来自所有域名请求
-        }
-        return 'http://localhost:8080';
-    },
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-}))
-
+app.use(cors())
 // 路由 批量读取并注册
 router(app)
 
