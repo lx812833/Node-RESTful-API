@@ -2,15 +2,16 @@ const Comments = require("../database/schema/Comments")
 
 class commentControl {
     async find(ctx) {
-        const { per_page = 2 } = ctx.query
+        const { per_page = 10 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
         const perPage = Math.max(per_page * 1, 1)
         const keyword = new RegExp(ctx.query.keyword)
         const { questionId, answerId } = ctx.params
+        const { rootCommentId } = ctx.query // 二级评论上的一级评论id
         const comment = await Comments
-            .find({ content: keyword, questionId, answerId })
+            .find({ content: keyword, questionId, answerId, rootCommentId })
             .limit(perPage).skip(page * per_page)
-            .populate("commentator") // 评论人信息
+            .populate("commentator replyTo") // 评论人信息
         ctx.body = {
             code: 200,
             data: {
@@ -46,6 +47,8 @@ class commentControl {
     async create(ctx) {
         ctx.verifyParams({
             content: { type: 'string', required: true },
+            rootCommentId: { type: 'string', required: false },
+            replyTo: { type: 'string', required: false },
         })
         const commentator = ctx.state.user._id
         const { questionId, answerId } = ctx.params
@@ -69,7 +72,8 @@ class commentControl {
         ctx.verifyParams({
             content: { type: 'string', required: true },
         })
-        await ctx.state.comment.update(ctx.request.body)
+        const { content } = ctx.request.body
+        await ctx.state.comment.update(content)
         ctx.body = {
             code: 200,
             data: {
