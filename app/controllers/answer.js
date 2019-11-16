@@ -20,7 +20,7 @@ class answerControl {
             ctx.throw(404, "答案不存在")
         }
         // 只有删改查时才检查此逻辑，赞与踩不检查
-        if (ctx.params.questionId && answer.questionId !== ctx.params.questionId) {
+        if (ctx.params.questionId && answer.questionId.toString() !== ctx.params.questionId) {
             ctx.throw(404, "该问题不存在此答案")
         }
         ctx.state.answer = answer
@@ -31,7 +31,6 @@ class answerControl {
         const selectFields = fields.split(";").filter(f => f).map(f => " +" + f).join("")
         // 问题与答案一对多
         const answer = await Answer.findById(ctx.params.id).select(selectFields).populate("answerer")
-        if (!answer) ctx.throw(404, "答案不存在")
         ctx.body = {
             code: 200,
             data: {
