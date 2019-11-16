@@ -25,6 +25,6 @@ const answerSchema = new Schema({
         required: true,
         default: 0
     }
-})
+}, { timestamps: true })
 
 module.exports = Answer = mongoose.model("Answer", answerSchema)

@@ -15,6 +15,6 @@ const topicSchema = new Schema({
         type: String,
         select: false
     }
-})
+}, { timestamps: true })
 
 module.exports = Topic = mongoose.model("Topic", topicSchema)
