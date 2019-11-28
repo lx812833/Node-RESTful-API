@@ -1,5 +1,3 @@
-const jsonwebtoken = require("jsonwebtoken")
-
 const User = require("../database/schema/Users")
 const Question = require("../database/schema/Questions")
 const Answer = require("../database/schema/Answer")
@@ -47,7 +45,7 @@ class UsersControl {
             code: 200,
             data: {
                 message: "用户创建成功",
-                name: user.name 
+                name: user.name
             }
         } // 只返回用户姓名
     }
@@ -101,7 +99,9 @@ class UsersControl {
         await next()
     }
     async checkOwner(ctx, next) {
-        if (ctx.params.id !== ctx.state.user._id) ctx.throw(403, "没有权限")
+        if (ctx.params.id !== ctx.state.user._id) {
+            ctx.throw(403, "没有权限")
+        }
         await next()
     }
     async follow(ctx) {

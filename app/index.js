@@ -22,7 +22,7 @@ const { connect, initSchemas } = require("./database/init.js");
 app.use(koaStatic(path.join(__dirname, "public")))
 
 app.use(jsonError({
-    postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
+    postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? { stack, ...rest } : rest 
 }))
 
 //文件上传
