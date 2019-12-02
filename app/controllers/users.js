@@ -1,8 +1,10 @@
+const jsonwebtoken = require("jsonwebtoken")
 const User = require("../database/schema/Users")
 const Question = require("../database/schema/Questions")
 const Answer = require("../database/schema/Answer")
 
 const { secret } = require("../config")
+console.log("secret", secret)
 
 class UsersControl {
     async find(ctx) {

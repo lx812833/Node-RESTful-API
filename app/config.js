@@ -1,7 +1,8 @@
 const jsonwebtoken = require("jsonwebtoken")
 
-class Config {
-    async auth(ctx, next) {
+const Config = {
+    secret: "zhihu-jwt-secret",
+    auth: async function (ctx, next) {
         let { token = '' } = ctx.request.header
         token = token.replace('Bearer ', '')
         try {
@@ -14,4 +15,4 @@ class Config {
     }
 }
 
-module.exports = new Config()
+module.exports = Config
