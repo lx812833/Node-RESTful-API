@@ -60,7 +60,10 @@ class UsersControl {
         if (!user) ctx.throw(404, "用户不存在")
         ctx.body = {
             code: 200,
-            data: { user }
+            data: {
+                message: "更新成功",
+                user
+            }
         }
     }
     async delete(ctx) {

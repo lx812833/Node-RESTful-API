@@ -28,7 +28,13 @@ class topicControl {
             introduction: { type: 'string', required: false },
         })
         const topic = await new Topic(ctx.request.body).save()
-        ctx.body = topic
+        ctx.body = {
+            code: 200,
+            data: {
+                message: "分类创建成功",
+                topic
+            }
+        }
     }
     async update(ctx) {
         ctx.verifyParams({
