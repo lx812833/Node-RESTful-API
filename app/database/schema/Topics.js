@@ -13,7 +13,7 @@ const topicSchema = new Schema({
     },
     introduction: {
         type: String,
-        select: false
+        select: true
     }
 }, { timestamps: true })
 

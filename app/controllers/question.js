@@ -43,12 +43,13 @@ class QuestionControl {
     async create(ctx) {
         ctx.verifyParams({
             title: { type: 'string', required: true },
-            description: { type: 'string', required: false },
+            description: { type: 'string', required: true },
         })
         const question = await new Question({ ...ctx.request.body, questioner: ctx.state.user._id }).save()
         ctx.body = {
             code: 200,
             data: {
+                message: "创建成功！",
                 question
             }
         }

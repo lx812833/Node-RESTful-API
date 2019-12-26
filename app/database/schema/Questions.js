@@ -12,7 +12,7 @@ const questionSchema = new Schema({
     },
     description: {
         type: String,
-        select: false // 默认返回，设置为false后不返回该字段
+        select: true // 默认返回，设置为false后不返回该字段
     },
     questioner: {
         type: Schema.Types.ObjectId, ref: "User",
