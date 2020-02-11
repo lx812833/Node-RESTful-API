@@ -16,6 +16,7 @@ class QuestionControl {
         ctx.body = {
             code: 200,
             data: {
+                message: "获取成功！",
                 questions
             }
         }
@@ -36,6 +37,7 @@ class QuestionControl {
         ctx.body = {
             code: 200,
             data: {
+                message: "获取成功！",
                 question
             }
         }
@@ -77,6 +79,7 @@ class QuestionControl {
         ctx.body = {
             code: 200,
             data: {
+                message: "创建成功！",
                 question: ctx.state.question
             }
         }
